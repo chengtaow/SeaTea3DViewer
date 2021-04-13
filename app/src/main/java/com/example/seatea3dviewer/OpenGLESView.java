@@ -32,6 +32,7 @@ public class OpenGLESView extends GLSurfaceView {
     private class SceneRenderer implements GLSurfaceView.Renderer {
         private Triangle tle;
         public void onDrawFrame(GL10 gl) {
+            GLES20.glEnable(GLES20.GL_CULL_FACE);
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
             tle.drawSelf();
         }
@@ -46,10 +47,10 @@ public class OpenGLESView extends GLSurfaceView {
         public void onSurfaceChanged(GL10 gl, int width, int height) {
             GLES20.glViewport(0, 0, width, height);
             float ratio = (float) width / height;
-            Matrix.frustumM(tle.mProjMatrix, 0, -ratio, ratio,
-                    -1, 1, 1, 10);
-            Matrix.setLookAtM(tle.mVMatrix, 0, 0,0,3,
-                    0,0,0,0, 1.0f, 0);
+            MatrixState.setCamera(0,0,3,0,0,0,
+                    0,1.0f,0);
+            MatrixState.setFrustrumProjection(-ratio,ratio,-1,1,
+                    1,10);
         }
     }
 

@@ -8,14 +8,10 @@ import android.opengl.Matrix;
 
 public class Triangle {
     private int mProgram;
+    private int muMMatrixHandle;
     private int muMVPMatrixHandle;
     private int maPositionHandle;
     private int maColorHandle;
-
-    private float[] mMVPMatrix = new float[16];
-    private float[] mMMatrix = new float[16];
-    public float[] mVMatrix = new float[16];
-    public float[] mProjMatrix = new float[16];
 
     private String mVertexShader;
     private String mFragmentShader;
@@ -56,12 +52,6 @@ public class Triangle {
         mColorBuffer.position(0);
     }
 
-    private float[] getFinalMatrix(float[] spec) {
-        mMVPMatrix = new float[16];
-        Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, spec, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
-        return mMVPMatrix;
-    }
 
     private void initShader(OpenGLESView mv) {
         mVertexShader = ShaderUtil.loadFromAssetsFile("vertex.sh", mv.getResources());
@@ -70,16 +60,18 @@ public class Triangle {
         maPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         maColorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
         muMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        muMMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMMatrix");
     }
 
     public void drawSelf() {
         GLES20.glUseProgram(mProgram);
-        Matrix.setRotateM(mMMatrix, 0, 0, 0, 1, 0);
-        //Matrix.translateM(mMMatrix, 0, 0,0,1);
-        Matrix.rotateM(mMMatrix, 0, xAngle, 1, 0, 0);
+        MatrixState.setInitModel();
+        MatrixState.rotate(xAngle, 1, 0, 0);
 
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false,
-                getFinalMatrix(mMMatrix), 0);
+                MatrixState.getFinalMatrix(), 0);
+        GLES20.glUniformMatrix4fv(muMMatrixHandle, 1, false,
+                MatrixState.getModelMatrix(), 0);
 
         GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT,
                 false, 3 * 4, mVertexBuffer);
