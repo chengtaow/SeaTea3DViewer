@@ -11,6 +11,9 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class OpenGLESView extends GLSurfaceView {
     final float ANGLE_SPAN = 0.375f;
+    private final float TOUCH_SCALE_FACTOR = 180.0f / 320;
+    private float mPreviousY;
+    private float mPreviousX;
 
     private SceneRenderer mRenderer;
     private RotateThread rthread;
@@ -29,10 +32,27 @@ public class OpenGLESView extends GLSurfaceView {
         this.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        float x = e.getX();
+        float y = e.getY();
+        switch(e.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                float dx = x - mPreviousX;
+                float dy = y - mPreviousY;
+                mRenderer.tle.xAngle = mRenderer.tle.xAngle + dx * TOUCH_SCALE_FACTOR;
+                mRenderer.tle.yAngle = mRenderer.tle.yAngle + dy * TOUCH_SCALE_FACTOR;
+
+        }
+        mPreviousX = x;
+        mPreviousY = y;
+        return true;
+    }
+
     private class SceneRenderer implements GLSurfaceView.Renderer {
         private Triangle tle;
         public void onDrawFrame(GL10 gl) {
-            GLES20.glEnable(GLES20.GL_CULL_FACE);
+            //GLES20.glEnable(GLES20.GL_CULL_FACE);
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
             tle.drawSelf();
         }
@@ -55,7 +75,8 @@ public class OpenGLESView extends GLSurfaceView {
     }
 
     public class RotateThread extends Thread {
-        public boolean flag = true;
+        public boolean flag = false;
+        // disable the thread running
 
         @Override
         public void run() {

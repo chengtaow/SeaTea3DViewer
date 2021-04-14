@@ -20,6 +20,7 @@ public class Triangle {
 
     int vCount = 0;
     float xAngle = 0;
+    float yAngle = 0;
 
     public Triangle(OpenGLESView mv) {
         initVertexData();
@@ -66,7 +67,8 @@ public class Triangle {
     public void drawSelf() {
         GLES20.glUseProgram(mProgram);
         MatrixState.setInitModel();
-        MatrixState.rotate(xAngle, 1, 0, 0);
+        MatrixState.rotate(xAngle, 0, 1, 0);
+        MatrixState.rotate(yAngle, 1, 0,0);
 
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false,
                 MatrixState.getFinalMatrix(), 0);
