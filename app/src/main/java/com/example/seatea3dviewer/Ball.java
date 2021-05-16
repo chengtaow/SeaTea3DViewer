@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import android.opengl.GLES20;
 
 public class Ball {
-    final float UNIT_SIZE = 0.2f;
+    final float UNIT_SIZE = 1f;
     private int mProgram;
     private int muMVPMatrixHandle;
     private int maPositionHandle;
+    private int maColorHandle;
     private int muRHandle;
     String mVertexShader;
     String mFragmentShader;
     private FloatBuffer mVertexBuffer;
+    private FloatBuffer mColorBuffer;
     int vCount = 0;
     float yAngle = 0;
     float xAngle = 0;
@@ -95,12 +97,45 @@ public class Ball {
         mVertexBuffer = vbb.asFloatBuffer();
         mVertexBuffer.put(vertices);
         mVertexBuffer.position(0);
+
+        float colors[] = new float[vCount * 4];
+        for (int i = 0; i < vCount / 6; i++) {
+            colors[i * 4 * 6] = 1;
+            colors[i * 4 * 6 + 1] = 1;
+            colors[i * 4 * 6 + 2] = 1;
+
+            colors[i * 4 * 6 + 4] = 0;
+            colors[i * 4 * 6 + 5] = 1;
+            colors[i * 4 * 6 + 6] = 1;
+
+            colors[i * 4 * 6 + 8] = 1;
+            colors[i * 4 * 6 + 9] = 0;
+            colors[i * 4 * 6 + 10] = 1;
+
+            colors[i * 4 * 6 + 12] = 1;
+            colors[i * 4 * 6 + 13] = 1;
+            colors[i * 4 * 6 + 14] = 0;
+
+            colors[i * 4 * 6 + 16] = 0;
+            colors[i * 4 * 6 + 17] = 0;
+            colors[i * 4 * 6 + 18] = 1;
+
+            colors[i * 4 * 6 + 20] = 1;
+            colors[i * 4 * 6 + 21] = 0;
+            colors[i * 4 * 6 + 22] = 0;
+        };
+        ByteBuffer cbb = ByteBuffer.allocateDirect(colors.length * 4);
+        cbb.order(ByteOrder.nativeOrder());
+        mColorBuffer = cbb.asFloatBuffer();
+        mColorBuffer.put(colors);
+        mColorBuffer.position(0);
     }
 
     public void initShader(OpenGLESView mv) {
-        mVertexShader = ShaderUtil.loadFromAssetsFile("vertex_ball.sh", mv.getResources());
-        mFragmentShader = ShaderUtil.loadFromAssetsFile("frag_ball.sh", mv.getResources());
+        mVertexShader = ShaderUtil.loadFromAssetsFile("vertex.sh", mv.getResources());
+        mFragmentShader = ShaderUtil.loadFromAssetsFile("frag.sh", mv.getResources());
         mProgram = ShaderUtil.createProgram(mVertexShader, mFragmentShader);
+        maColorHandle = GLES20.glGetAttribLocation(mProgram, "aColor");
         maPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         muMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         muRHandle = GLES20.glGetUniformLocation(mProgram, "uR");
@@ -109,8 +144,9 @@ public class Ball {
     public void drawSelf() {
         GLES20.glUseProgram(mProgram);
         MatrixState.setInitModel();
-        MatrixState.rotate(xAngle, 0, 1, 0);
-        MatrixState.rotate(yAngle, 1, 0,0);
+        MatrixState.rotate(xAngle, 1, 0, 0);
+        MatrixState.rotate(yAngle, 0, 1,0);
+        MatrixState.rotate(zAngle, 0, 0,1);
         GLES20.glUniform1f(muRHandle, r * UNIT_SIZE);
 
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false,
@@ -118,8 +154,11 @@ public class Ball {
 
         GLES20.glVertexAttribPointer(maPositionHandle, 3, GLES20.GL_FLOAT,
                 false, 3 * 4, mVertexBuffer);
+        GLES20.glVertexAttribPointer(maColorHandle, 4, GLES20.GL_FLOAT,
+                false, 4 * 4, mColorBuffer);
 
         GLES20.glEnableVertexAttribArray(maPositionHandle);
+        GLES20.glEnableVertexAttribArray(maColorHandle);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vCount);
     }
