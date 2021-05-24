@@ -40,8 +40,8 @@ public class OpenGLESView extends GLSurfaceView {
             case MotionEvent.ACTION_MOVE:
                 float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
-                mRenderer.tle.xAngle = mRenderer.tle.xAngle + dx * TOUCH_SCALE_FACTOR;
-                mRenderer.tle.yAngle = mRenderer.tle.yAngle + dy * TOUCH_SCALE_FACTOR;
+                mRenderer.ball.xAngle = mRenderer.ball.xAngle + dx * TOUCH_SCALE_FACTOR;
+                mRenderer.ball.yAngle = mRenderer.ball.yAngle + dy * TOUCH_SCALE_FACTOR;
 
         }
         mPreviousX = x;
@@ -50,15 +50,16 @@ public class OpenGLESView extends GLSurfaceView {
     }
 
     private class SceneRenderer implements GLSurfaceView.Renderer {
-        private Triangle tle;
+        //private Triangle tle;
+        private Ball ball;
         public void onDrawFrame(GL10 gl) {
             //GLES20.glEnable(GLES20.GL_CULL_FACE);
             GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
-            tle.drawSelf();
+            ball.drawSelf();
         }
         public void onSurfaceCreated(GL10 unused, EGLConfig config) {
             GLES20.glClearColor(0, 0, 0, 1);
-            tle = new Triangle(OpenGLESView.this);
+            ball = new Ball(OpenGLESView.this);
             GLES20.glEnable(GLES20.GL_DEPTH_TEST);
             rthread = new RotateThread();
             rthread.start();
@@ -81,7 +82,7 @@ public class OpenGLESView extends GLSurfaceView {
         @Override
         public void run() {
             while(flag) {
-                mRenderer.tle.xAngle = mRenderer.tle.xAngle + ANGLE_SPAN;
+                mRenderer.ball.xAngle = mRenderer.ball.xAngle + ANGLE_SPAN;
                 try {
                     Thread.sleep(20);
                 } catch (Exception e) {
