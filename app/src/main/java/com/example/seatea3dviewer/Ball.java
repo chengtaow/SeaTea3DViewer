@@ -147,6 +147,7 @@ public class Ball {
         MatrixState.rotate(xAngle, 1, 0, 0);
         MatrixState.rotate(yAngle, 0, 1,0);
         MatrixState.rotate(zAngle, 0, 0,1);
+
         GLES20.glUniform1f(muRHandle, r * UNIT_SIZE);
 
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false,
