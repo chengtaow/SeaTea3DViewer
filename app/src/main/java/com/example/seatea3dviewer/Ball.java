@@ -104,25 +104,25 @@ public class Ball {
             colors[i * 4 * 6 + 1] = 1;
             colors[i * 4 * 6 + 2] = 1;
 
-            colors[i * 4 * 6 + 4] = 0;
-            colors[i * 4 * 6 + 5] = 1;
-            colors[i * 4 * 6 + 6] = 1;
+            colors[i * 4 * 6 + 4] = 1;
+            colors[i * 4 * 6 + 5] = 0;
+            colors[i * 4 * 6 + 6] = 0;
 
             colors[i * 4 * 6 + 8] = 1;
             colors[i * 4 * 6 + 9] = 0;
-            colors[i * 4 * 6 + 10] = 1;
+            colors[i * 4 * 6 + 10] = 0;
 
             colors[i * 4 * 6 + 12] = 1;
             colors[i * 4 * 6 + 13] = 1;
-            colors[i * 4 * 6 + 14] = 0;
+            colors[i * 4 * 6 + 14] = 1;
 
-            colors[i * 4 * 6 + 16] = 0;
-            colors[i * 4 * 6 + 17] = 0;
+            colors[i * 4 * 6 + 16] = 1;
+            colors[i * 4 * 6 + 17] = 1;
             colors[i * 4 * 6 + 18] = 1;
 
             colors[i * 4 * 6 + 20] = 1;
-            colors[i * 4 * 6 + 21] = 0;
-            colors[i * 4 * 6 + 22] = 0;
+            colors[i * 4 * 6 + 21] = 1;
+            colors[i * 4 * 6 + 22] = 1;
         };
         ByteBuffer cbb = ByteBuffer.allocateDirect(colors.length * 4);
         cbb.order(ByteOrder.nativeOrder());
